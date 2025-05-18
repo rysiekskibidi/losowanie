@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Losowanie za /pay</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; text-align: center; padding: 2rem; }
+    input, button { padding: 0.5rem; font-size: 1rem; margin: 0.5rem; }
+    .entry { margin: 0.3rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Losowanie /pay</h1>
+  <input id="nick" placeholder="Nick gracza">
+  <input id="kwota" placeholder="Kwota" type="number">
+  <button onclick="dodaj()">Dodaj do losowania</button>
+
+  <h2>Lista uczestników:</h2>
+  <div id="lista"></div>
+
+  <h2><button onclick="losuj()">🎲 Wylosuj zwycięzcę</button></h2>
+  <h2 id="wynik"></h2>
+
+  <script>
+    let gracze = [];
+
+    function dodaj() {
+      const nick = document.getElementById('nick').value.trim();
+      const kwota = parseFloat(document.getElementById('kwota').value);
+      if (!nick || isNaN(kwota) || kwota <= 0) {
+        alert("Podaj poprawnego nicka i kwotę!");
+        return;
+      }
+
+      gracze.push({ nick, kwota });
+      pokazListe();
+    }
+
+    function pokazListe() {
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+      let suma = gracze.reduce((a, b) => a + b.kwota, 0);
+      gracze.forEach(g => {
+        const procent = ((g.kwota / suma) * 100).toFixed(2);
+        lista.innerHTML += `<div class="entry">${g.nick} – ${g.kwota} $ (${procent}%)</div>`;
+      });
+    }
+
+    function losuj() {
+      if (gracze.length === 0) {
+        alert("Brak uczestników!");
+        return;
+      }
+
+      const total = gracze.reduce((a, b) => a + b.kwota, 0);
+      const r = Math.random() * total;
+      let sum = 0;
+      for (let g of gracze) {
+        sum += g.kwota;
+        if (r <= sum) {
+          document.getElementById('wynik').innerText = `🏆 Wygrał: ${g.nick}`;
+          return;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
